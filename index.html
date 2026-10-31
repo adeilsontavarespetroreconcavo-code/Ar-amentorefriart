@@ -198,7 +198,7 @@ input[type="number"]{font-variant-numeric:tabular-nums}
 .save-state{font-size:13px;color:var(--muted)}
 
 /* send */
-.msg{min-height:110px}
+.msg{min-height:260px;line-height:1.5}
 .steps{display:flex;gap:8px 16px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
 
 /* toast */
@@ -248,8 +248,8 @@ input[type="number"]{font-variant-numeric:tabular-nums}
             <h2>Cliente</h2>
             <div class="grid2">
               <div class="field"><label for="q-nome">Nome ou razão social</label><input id="q-nome" data-q="cliente.nome" autocomplete="off" maxlength="120"></div>
-              <div class="field"><label for="q-doc">CPF ou CNPJ</label><input id="q-doc" data-q="cliente.doc" inputmode="numeric" autocomplete="off" maxlength="24"></div>
-              <div class="field"><label for="q-tel">WhatsApp</label><input id="q-tel" data-q="cliente.tel" type="tel" inputmode="tel" placeholder="(84) 99999-0000" autocomplete="off" maxlength="24"></div>
+              <div class="field"><label for="q-doc">CPF ou CNPJ</label><input id="q-doc" data-mask="doc" data-q="cliente.doc" inputmode="numeric" autocomplete="off" maxlength="24"></div>
+              <div class="field"><label for="q-tel">WhatsApp</label><input id="q-tel" data-mask="tel" data-q="cliente.tel" type="tel" inputmode="tel" placeholder="(84) 99999-0000" autocomplete="off" maxlength="24"></div>
               <div class="field"><label for="q-email">E-mail</label><input id="q-email" data-q="cliente.email" type="email" autocomplete="off" maxlength="120"></div>
               <div class="field span2"><label for="q-end">Endereço do atendimento</label><input id="q-end" data-q="cliente.end" autocomplete="off" maxlength="200"></div>
             </div>
@@ -293,7 +293,7 @@ input[type="number"]{font-variant-numeric:tabular-nums}
             </div>
             <div class="field">
               <label for="msg">Mensagem para o cliente</label>
-              <textarea id="msg" class="msg" maxlength="1200"></textarea>
+              <textarea id="msg" class="msg" maxlength="4000" rows="14"></textarea>
             </div>
             <div class="btn-row" style="margin-top:10px">
               <a class="btn" id="btn-wa" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Abrir WhatsApp</a>
@@ -319,8 +319,10 @@ input[type="number"]{font-variant-numeric:tabular-nums}
                 </div>
               </div>
               <div class="sum-row" id="s-desc-row"><span>Desconto aplicado</span><span class="v" id="s-desc">R$ 0,00</span></div>
+              <div class="field"><label for="q-avista">Desconto à vista no Pix ou dinheiro (%)</label><input id="q-avista" data-q="avista" data-fmt="int" inputmode="decimal" maxlength="5"></div>
             </div>
             <div class="total-box"><span>Total</span><b id="s-total">R$ 0,00</b></div>
+            <div class="sum-body" style="padding-bottom:0"><div class="sum-row"><span id="s-pix-l">No Pix ou dinheiro</span><b class="v" id="s-pix">R$ 0,00</b></div></div>
             <div class="sum-body">
               <div>
                 <div class="bar" id="s-bar" aria-hidden="true"></div>
@@ -391,8 +393,8 @@ input[type="number"]{font-variant-numeric:tabular-nums}
         </div>
         <div class="grid2">
           <div class="field"><label for="e-nome">Nome da empresa</label><input id="e-nome" data-c="empresa.nome" maxlength="120" autocomplete="off"></div>
-          <div class="field"><label for="e-doc">CNPJ ou CPF</label><input id="e-doc" data-c="empresa.doc" maxlength="24" autocomplete="off"></div>
-          <div class="field"><label for="e-tel">Telefone ou WhatsApp</label><input id="e-tel" data-c="empresa.tel" type="tel" maxlength="24" autocomplete="off"></div>
+          <div class="field"><label for="e-doc">CNPJ ou CPF</label><input id="e-doc" data-mask="doc" data-c="empresa.doc" maxlength="24" autocomplete="off"></div>
+          <div class="field"><label for="e-tel">Telefone ou WhatsApp</label><input id="e-tel" data-mask="tel" data-c="empresa.tel" type="tel" maxlength="24" autocomplete="off"></div>
           <div class="field"><label for="e-email">E-mail</label><input id="e-email" data-c="empresa.email" type="email" maxlength="120" autocomplete="off"></div>
           <div class="field span2"><label for="e-end">Endereço</label><input id="e-end" data-c="empresa.end" maxlength="200" autocomplete="off"></div>
           <div class="field"><label for="e-pix">Chave Pix (opcional)</label><input id="e-pix" data-c="empresa.pix" maxlength="80" autocomplete="off"></div>
@@ -403,6 +405,7 @@ input[type="number"]{font-variant-numeric:tabular-nums}
         <h2>Texto padrão dos novos orçamentos</h2>
         <div class="grid2">
           <div class="field"><label for="e-validade">Validade (dias)</label><input id="e-validade" data-c="pad.validade" data-fmt="int" inputmode="numeric" maxlength="3"></div>
+          <div class="field"><label for="e-avista">Desconto à vista no Pix ou dinheiro (%)</label><input id="e-avista" data-c="pad.avista" data-fmt="int" inputmode="decimal" maxlength="5"></div>
           <div class="field"><label for="e-prazo">Prazo de execução</label><input id="e-prazo" data-c="pad.prazo" maxlength="120"></div>
           <div class="field"><label for="e-pag">Forma de pagamento</label><textarea id="e-pag" data-c="pad.pagamento" rows="3" maxlength="500"></textarea></div>
           <div class="field"><label for="e-gar">Garantia</label><textarea id="e-gar" data-c="pad.garantia" rows="3" maxlength="500"></textarea></div>
@@ -499,6 +502,7 @@ function defaultCfg(){
     empresa:{nome:'Refriart',doc:'',tel:'',email:'',end:'',resp:'',pix:'',logo:LOGO_DEFAULT},
     pad:{
       validade:15,
+      avista:10,
       prazo:'',
       pagamento:'50% na aprovação e 50% na conclusão do serviço. Pix, cartão de crédito ou débito.',
       garantia:'90 dias sobre os serviços executados. Equipamentos e peças seguem a garantia do fabricante.',
@@ -533,6 +537,34 @@ function parseBR(s){
   var n=parseFloat(s);
   return isFinite(n)?n:0;
 }
+function maskVal(kind,v){
+  var d=String(v||'').replace(/\D/g,'');
+  if(kind==='doc'){
+    d=d.slice(0,14);
+    if(d.length<=11)return d.replace(/^(\d{3})(\d)/,'$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1-$2');
+    return d.replace(/^(\d{2})(\d)/,'$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3').replace(/\.(\d{3})(\d)/,'.$1/$2').replace(/(\d{4})(\d)/,'$1-$2');
+  }
+  if(kind==='tel'){
+    if(d.indexOf('55')===0&&d.length>11)d=d.slice(2);
+    d=d.slice(0,11);
+    if(d.length<=2)return d?'('+d:'';
+    if(d.length<=6)return '('+d.slice(0,2)+') '+d.slice(2);
+    if(d.length<=10)return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6);
+    return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+  }
+  return v;
+}
+function applyMask(el){
+  var f=maskVal(el.dataset.mask,el.value);
+  if(f===el.value)return;
+  var pos=el.selectionStart,atEnd=pos==null||pos>=el.value.length,digits=0;
+  if(!atEnd)digits=el.value.slice(0,pos).replace(/\D/g,'').length;
+  el.value=f;
+  if(atEnd){return}
+  var n=0,i=0;
+  for(;i<f.length&&n<digits;i++){if(/\d/.test(f[i]))n++}
+  try{el.setSelectionRange(i,i)}catch(e){}
+}
 function getPath(o,p){return p.split('.').reduce(function(a,k){return a==null?a:a[k]},o)}
 function setPath(o,p,v){var ks=p.split('.'),last=ks.pop(),t=o;ks.forEach(function(k){t=t[k]});t[last]=v}
 function todayISO(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -549,7 +581,8 @@ function calc(q){
   q.itens.forEach(function(it){var t=lt(it);sub+=t;by[it.tipo]=(by[it.tipo]||0)+t});
   var d=q.dg&&q.dg.tipo==='R$'?(q.dg.valor||0):sub*((q.dg&&q.dg.valor)||0)/100;
   d=Math.min(Math.max(d,0),sub);d=Math.round(d*100)/100;
-  return {sub:sub,desc:d,total:Math.round((sub-d)*100)/100,by:by};
+  var tot=Math.round((sub-d)*100)/100,a=Math.min(Math.max(q.avista||0,0),100);
+  return {sub:sub,desc:d,total:tot,by:by,avista:a,pix:Math.round(tot*(1-a/100)*100)/100};
 }
 var toastT;
 function toast(msg){var el=$('#toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('on')},3600)}
@@ -564,7 +597,7 @@ var state={
 function newQuote(){
   var p=state.cfg.pad;
   return {
-    id:uid(),ano:0,num:0,status:'rascunho',data:todayISO(),validade:p.validade,
+    id:uid(),ano:0,num:0,status:'rascunho',data:todayISO(),validade:p.validade,avista:p.avista,
     cliente:{nome:'',doc:'',tel:'',email:'',end:''},
     itens:[],dg:{tipo:'%',valor:0},
     pagamento:p.pagamento,prazo:p.prazo,garantia:p.garantia,obs:p.obs
@@ -700,7 +733,8 @@ window.addEventListener('hashchange',function(){var t=location.hash.slice(1);if(
 function fillBound(root,attr,obj){
   $$('['+attr+']',root).forEach(function(el){
     var v=getPath(obj,el.getAttribute(attr)),f=el.dataset.fmt;
-    if(f==='money')el.value=fmtMoneyIn(v);
+    if(el.dataset.mask)el.value=maskVal(el.dataset.mask,v);
+    else if(f==='money')el.value=fmtMoneyIn(v);
     else if(f==='int')el.value=v==null?'':String(v);
     else el.value=v==null?'':v;
   });
@@ -729,6 +763,8 @@ function updateSummary(){
   $('#s-sub').textContent=money(t.sub);
   $('#s-desc').textContent=t.desc>0?'- '+money(t.desc):money(0);
   $('#s-total').textContent=money(t.total);
+  $('#s-pix-l').textContent=t.avista>0?('No Pix ou dinheiro ('+fmtQty(t.avista)+'% off)'):'No Pix ou dinheiro';
+  $('#s-pix').textContent=money(t.pix);
   var bar=$('#s-bar'),leg=$('#s-legend'),tot=0;
   TIPO_IDS.forEach(function(id){tot+=t.by[id]||0});
   var parts=TIPO_IDS.filter(function(id){return (t.by[id]||0)>0});
@@ -843,6 +879,7 @@ $('#pk-list').addEventListener('click',function(e){
 /* ---------- campos ligados ---------- */
 document.addEventListener('input',function(e){
   var el=e.target;
+  if(el.dataset&&el.dataset.mask)applyMask(el);
   if(el.hasAttribute&&el.hasAttribute('data-q')){
     markEdited();setPath(state.cur,el.getAttribute('data-q'),readBound(el));
     onQuoteChange();
@@ -865,9 +902,32 @@ $('.brand').addEventListener('click',function(e){e.preventDefault();goTab('novo'
 /* ---------- mensagem e envio ---------- */
 function firstName(n){return String(n||'').trim().split(/\s+/)[0]||''}
 function defaultMsg(){
-  var q=state.cur,e=state.cfg.empresa,t=calc(q),nome=firstName(q.cliente.nome);
-  var n=numStr(q),emp=(e.nome||'').trim();
-  return 'Olá'+(nome?', '+nome:'')+'! Segue o orçamento'+(n?' nº '+n:'')+(emp?' da '+emp:'')+', no valor de '+money(t.total)+', válido até '+brDate(validUntil(q))+'. O PDF está em anexo. Qualquer dúvida, é só chamar.';
+  var q=state.cur,e=state.cfg.empresa,t=calc(q),nome=firstName(q.cliente.nome),n=numStr(q),emp=(e.nome||'').trim(),a=t.avista,L=[];
+  L.push('❄️ *ORÇAMENTO'+(n?' Nº '+n:'')+(emp?' - '+emp.toUpperCase():'')+'* ❄️');
+  L.push('');
+  L.push('Olá'+(nome?', '+nome:'')+'! Segue o seu orçamento.');
+  L.push('');
+  L.push('*Data:* '+brDate(parseISO(q.data)));
+  L.push('*Válido até:* '+brDate(validUntil(q)));
+  L.push('');
+  q.itens.forEach(function(it,i){
+    var tot=lt(it);
+    L.push('*Item '+(i+1)+':* '+String(it.desc||'').trim());
+    var v=it.qtd===1?('*Valor:* '+money(tot)):('*Valor:* '+fmtQty(it.qtd)+' '+it.un+' x '+money(it.preco)+' = '+money(tot));
+    if(a>0)v+=' | *'+fmtQty(a)+'% no Pix ou dinheiro:* '+money(Math.round(tot*(1-a/100)*100)/100);
+    L.push(v);
+    L.push('');
+  });
+  if(t.desc>0){L.push('*Subtotal:* '+money(t.sub));L.push('*Desconto:* - '+money(t.desc))}
+  L.push('*Total:* '+money(t.total));
+  if(a>0)L.push('*Total no Pix ou dinheiro ('+fmtQty(a)+'% off):* '+money(t.pix));
+  L.push('');
+  if((q.pagamento||'').trim())L.push('*Forma de pagamento:* '+q.pagamento.trim());
+  if((q.prazo||'').trim())L.push('*Prazo de execução:* '+q.prazo.trim());
+  if((q.garantia||'').trim())L.push('*Garantia:* '+q.garantia.trim());
+  L.push('');
+  L.push('O PDF está em anexo. Qualquer dúvida, é só chamar.');
+  return L.join('\n');
 }
 function waNumber(tel){
   var d=String(tel||'').replace(/\D/g,'');
@@ -886,7 +946,7 @@ function updateSend(){
   setLink($('#btn-wa'),wa?'https://wa.me/'+wa+'?text='+encodeURIComponent(msg.value):'');
   var em=(q.cliente.email||'').trim();
   var subj='Orçamento'+(numStr(q)?' nº '+numStr(q):'')+((state.cfg.empresa.nome||'').trim()?' - '+state.cfg.empresa.nome.trim():'');
-  setLink($('#btn-mail'),em?'mailto:'+encodeURIComponent(em).replace(/%40/g,'@')+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg.value):'');
+  setLink($('#btn-mail'),em?'mailto:'+encodeURIComponent(em).replace(/%40/g,'@')+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(msg.value.replace(/\*/g,'')):'');
   $('#mail-show').textContent=em?('E-mail do cliente: '+em+'. Se o botão de e-mail não abrir, copie a mensagem e envie pelo seu aplicativo.'):'Informe o WhatsApp ou o e-mail do cliente para ativar os botões de envio.';
 }
 $('#msg').addEventListener('input',function(){state.msgDirty=true;updateSend()});
@@ -1021,7 +1081,12 @@ function buildPdf(q,cfg){
   }
   doc.setFillColor(ink[0],ink[1],ink[2]);doc.rect(bx-3,y-3.8,75,11,'F');
   doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text('TOTAL',bx,y+3);
-  doc.setFontSize(12.5);doc.text(m(tt.total),W-M-3,y+3.4,{align:'right'});y+=18;
+  doc.setFontSize(12.5);doc.text(m(tt.total),W-M-3,y+3.4,{align:'right'});y+=11;
+  if(tt.avista>0){
+    doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(accent[0],accent[1],accent[2]);
+    doc.text('No Pix ou dinheiro ('+fmtQty(tt.avista)+'% off)',bx,y+3.4);doc.text(m(tt.pix),W-M-3,y+3.4,{align:'right'});y+=7;
+  }
+  y+=7;
 
   function section(label,text){
     if(!text||!String(text).trim())return;
@@ -1059,12 +1124,12 @@ async function downloadPdf(q,autosave){
     if(state.ready)saveCurrent();
   }
   var blob;
-  try{blob=buildPdf(q,state.cfg)}catch(err){console.error(err);toast('Erro ao montar o PDF.');return false}
+  try{blob=buildPdf(q,state.cfg)}catch(err){console.error(err);toast('Erro ao montar o PDF: '+((err&&err.message)||'desconhecido'));return false}
   var dl=null;
   try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(_){dl=null}
   if(!dl){toast('O download não está disponível nesta visualização. Abra o app pelo Claude para baixar o PDF.');return false}
   try{await dl.save({filename:pdfName(q),data:blob});toast('PDF pronto. Anexe na conversa com o cliente.');return true}
-  catch(err){if(!(err&&err.code==='declined'))toast('Não foi possível salvar o PDF.');return false}
+  catch(err){if(!(err&&err.code==='declined'))toast('Não foi possível salvar o PDF ('+((err&&err.code)||'erro')+').');return false}
 }
 function pdfClick(btn){
   var label=btn.textContent;btn.disabled=true;btn.textContent='Gerando PDF…';
