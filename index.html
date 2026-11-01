@@ -1,4 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
 <title>Orçamentos Refriart</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1117,6 +1118,21 @@ function buildPdf(q,cfg){
   }
   return doc.output('blob');
 }
+async function fallbackSave(blob,name){
+  try{
+    var f=new File([blob],name,{type:blob.type||'application/pdf'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){
+      await navigator.share({files:[f],title:name});
+      toast('Escolha o WhatsApp, o e-mail ou outro destino.');return true;
+    }
+  }catch(e){if(e&&e.name==='AbortError')return false}
+  try{
+    var u=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){URL.revokeObjectURL(u)},4000);
+    toast('Arquivo baixado. Procure em Downloads: '+name);return true;
+  }catch(e){toast('Não foi possível baixar o arquivo neste aparelho.');return false}
+}
 async function downloadPdf(q,autosave){
   if(!window.jspdf||!window.jspdf.jsPDF){toast('Não foi possível carregar o gerador de PDF. Verifique a conexão e recarregue.');return false}
   if(autosave){
@@ -1127,7 +1143,7 @@ async function downloadPdf(q,autosave){
   try{blob=buildPdf(q,state.cfg)}catch(err){console.error(err);toast('Erro ao montar o PDF: '+((err&&err.message)||'desconhecido'));return false}
   var dl=null;
   try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(_){dl=null}
-  if(!dl){toast('O download não está disponível nesta visualização. Abra o app pelo Claude para baixar o PDF.');return false}
+  if(!dl)return fallbackSave(blob,pdfName(q));
   try{await dl.save({filename:pdfName(q),data:blob});toast('PDF pronto. Anexe na conversa com o cliente.');return true}
   catch(err){if(!(err&&err.code==='declined'))toast('Não foi possível salvar o PDF ('+((err&&err.code)||'erro')+').');return false}
 }
@@ -1225,7 +1241,7 @@ $('#btn-csv').addEventListener('click',async function(){
     return [numStr(q),brDate(parseISO(q.data)),q.cliente.nome,q.cliente.tel,q.cliente.email,q.status,q.itens.length,fmtMoneyIn(t.sub),fmtMoneyIn(t.desc),fmtMoneyIn(t.total)].map(cell).join(';');
   }));
   var dl=null;try{dl=window.claude&&window.claude.use?await window.claude.use('downloads'):null}catch(_){}
-  if(!dl){toast('O download não está disponível nesta visualização.');return}
+  if(!dl){fallbackSave(new Blob([lines.join('\r\n')],{type:'text/csv'}),'orcamentos.csv');return}
   try{await dl.save({filename:'orcamentos.csv',data:'﻿'+lines.join('\r\n')});toast('Planilha pronta')}
   catch(err){if(!(err&&err.code==='declined'))toast('Não foi possível salvar a planilha.')}
 });
